@@ -100,9 +100,8 @@ UINT TreadSend(LPVOID pParam)
 				continue;
 			}
 			llNow += nPerSize;
-			file.Read(buf, nPerSize);
-			pTask->SendTo(buf, nPerSize, nPort, strAddress);
-
+			int nReadSize = file.Read(buf, nPerSize);
+			pTask->SendTo(buf, nReadSize, nPort, strAddress);
 
 			int nTmpPrgrs = (int)(llNow*1.0 / llTotalSize * 100 + 0.5);
 			nTmpPrgrs = nTmpPrgrs > 100 ? 100 : nTmpPrgrs;
