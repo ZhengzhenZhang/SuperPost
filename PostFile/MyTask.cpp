@@ -72,10 +72,12 @@ UINT TreadSend(LPVOID pParam)
 	}
 
 	g_cs.Unlock();
-
+	
 	if (bFailed)
 	{
-		file.Close();
+		pTask->m_csFinish.Unlock();
+
+		file.Abort();
 		pTask->StopTask();
 		return 0;
 	}
@@ -114,7 +116,7 @@ UINT TreadSend(LPVOID pParam)
 
 
 
-	file.Close();
+	file.Abort();
 	pTask->Close();
 
 	pTask->m_csFinish.Unlock();

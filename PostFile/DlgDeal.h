@@ -31,4 +31,5 @@ protected:
 public:
 	afx_msg void OnDropFiles(HDROP hDropInfo);
 	virtual BOOL OnInitDialog();
+	virtual void OnOK();
 };

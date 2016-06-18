@@ -556,8 +556,9 @@ void CPostFileDlg::OnMenuModify()
 
 		CDlgTask dlg;
 		dlg.m_bModify = true;
+		dlg.m_strDirectory = m_strDirectory;
 		dlg.m_strPath = m_listTask.GetItemText(nIndex, 8);
-		dlg.m_bReceive = pTask->m_strAddress == _T("###");
+		dlg.m_bReceive = (pTask->m_strAddress == _T("###"));
 
 		for (int i = 0; i < 4; i++)
 			dlg.m_strDIPP[i] = m_listTask.GetItemText(nIndex, i + 3);

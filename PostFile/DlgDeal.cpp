@@ -118,10 +118,10 @@ void CDlgDeal::FunRadio1(LPCTSTR fPath)
 	ULONGLONG nNowPro = 0;
 	int nPrograss = 0;
 
-	BYTE rBuf[1005];		// 读缓冲区
-	BYTE wBuf[3005];		// 写缓冲区
+	BYTE rBuf[20];		// 读缓冲区
+	BYTE wBuf[60];		// 写缓冲区
 
-	int perSize = 1000;
+	int perSize = 16;
 	int len = 0;
 	while (len = fileIn.Read(&rBuf, perSize))
 	{
@@ -137,12 +137,12 @@ void CDlgDeal::FunRadio1(LPCTSTR fPath)
 		// 转换数据
 		for (int i = 0; i < len; i++)
 		{
-			int j = i * 3;
-
-			wBuf[j] = DTOHEX((rBuf[i] & 0xf0) >> 4);
-			wBuf[j + 1] = DTOHEX(rBuf[i] & 0x0f);
-			wBuf[j + 2] = _T(' ');
+			wBuf[i*3] = DTOHEX((rBuf[i] & 0xf0) >> 4);
+			wBuf[i*3 + 1] = DTOHEX(rBuf[i] & 0x0f);
+			wBuf[i*3 + 2] = _T(' ');
 		}
+
+		wBuf[len*3 - 1] = _T('\n');
 
 		// 写入输出文件
 		fileOut.Write(wBuf, len*3);
@@ -172,18 +172,19 @@ void CDlgDeal::FunRadio2(LPCTSTR fPath)
 	fileIn.Open(fPath, CFile::modeRead);
 
 	CStdioFile fileOut;
-	fileOut.Open(strPath, CFile::modeReadWrite | CFile::modeCreate);
+	fileOut.Open(strPath, CFile::modeReadWrite | CFile::modeCreate | CFile::typeBinary);
 
 	// 计算进度变量
 	ULONGLONG nTotal = fileIn.GetLength();
 	ULONGLONG nNowPro = 0;
 	int nPrograss = 0;
 
-	BYTE rBuf[3005];		// 读缓冲区
-	BYTE wBuf[1005];				// 写缓冲区
+	BYTE rBuf[60];		// 读缓冲区
+	BYTE wBuf[60];		// 写缓冲区
 
-	int perSize = 3000;
+	int perSize = 49;	// 一个'\n'相当于换行加回车
 	int len = 0;
+	BYTE preHi = 0;
 	while (len = fileIn.Read(&rBuf, perSize))
 	{
 		// 进度条代码
@@ -196,15 +197,30 @@ void CDlgDeal::FunRadio2(LPCTSTR fPath)
 		}
 
 		// 转换数据
-		for (int i = 0; i < len; i+=3)
+		int j = 0;
+		for (int i = 0; i < len; i++)
 		{
-			char hi = LOTOUP(rBuf[i]);
-			char low = LOTOUP(rBuf[i + 1]);
-			wBuf[i/3] = HEXTOD(hi) * 16 + HEXTOD(low);
+			if ((rBuf[i] >= _T('0') && rBuf[i] <= _T('9'))
+				|| (rBuf[i] >= _T('A') && rBuf[i] <= _T('F'))
+				|| (rBuf[i] >= _T('a') && rBuf[i] <= _T('f')))
+			{
+				if (0 == preHi)
+					preHi = rBuf[i];
+				else
+				{
+					BYTE hi = LOTOUP(preHi);
+					BYTE low = LOTOUP(rBuf[i]);
+					wBuf[j++] = HEXTOD(hi) * 16 + HEXTOD(low);
+					preHi = 0;
+				}
+			}
+			else
+				preHi = 0;
 		}
 
 		// 写入输出文件
-		fileOut.Write(wBuf, len/3);
+		if (j > 0)
+			fileOut.Write(wBuf, j);
 
 		if (!PeekAndPump())
 			break;
@@ -219,3 +235,11 @@ void CDlgDeal::FunRadio2(LPCTSTR fPath)
 	MessageBox(str, NULL, MB_ICONINFORMATION);
 }
 
+
+
+void CDlgDeal::OnOK()
+{
+	// TODO: 在此添加专用代码和/或调用基类
+
+	//CDialogEx::OnOK();
+}

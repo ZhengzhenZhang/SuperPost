@@ -88,6 +88,7 @@ BOOL CDlgTask::OnInitDialog()
 	}
 	
 	// 如果修改状态就不读取最近数据
+
 	ReadRecently();
 
 	// 得到最近修改数据
@@ -125,6 +126,8 @@ void CDlgTask::OnBnClickedButtonSelect()
 
 void CDlgTask::ReadRecently()
 {
+	if (m_bReceive)
+		return;
 	CStdioFile stdFile;
 	CString strPath = m_strDirectory + _T("\\SuperPost\\config_set.rct");
 
@@ -148,6 +151,8 @@ void CDlgTask::ReadRecently()
 
 void CDlgTask::WriteRecently()
 { 
+	if (m_bReceive)
+		return;
 	// 将最近使用的插入到第一行
 	for (int i = 0; i < 4; i++)
 	{
@@ -156,8 +161,7 @@ void CDlgTask::WriteRecently()
 		if (nIndex >= 0)
 			m_cbDIPP[i].DeleteString(nIndex);
 
-		if (m_strDIPP[i] != _T("###") || m_strDIPP[i] != _T(""))
-			m_cbDIPP[i].InsertString(0, m_strDIPP[i]);
+		m_cbDIPP[i].InsertString(0, m_strDIPP[i]);
 
 		while (nIndex = m_cbDIPP[i].GetCount())
 		{
@@ -229,8 +233,6 @@ void CDlgTask::OnOK()
 		return;
 	}
 
-	WriteRecently();
-
 	if (m_bReceive)
 	{
 		m_strDIPP[0] = _T("###");
@@ -239,6 +241,8 @@ void CDlgTask::OnOK()
 		UpdateData(FALSE);
 	}
 	
+	WriteRecently();
+
 	CDialogEx::OnOK();
 }
 
