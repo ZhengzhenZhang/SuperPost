@@ -101,6 +101,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DlgDeal.h" />
     <ClInclude Include="DlgTask.h" />
     <ClInclude Include="MyTask.h" />
     <ClInclude Include="MyToolTipCtrl.h" />
@@ -111,6 +112,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DlgDeal.cpp" />
     <ClCompile Include="DlgTask.cpp" />
     <ClCompile Include="MyTask.cpp" />
     <ClCompile Include="MyToolTipCtrl.cpp" />
@@ -129,6 +131,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Begin.ico" />
+    <Image Include="res\DataTrans.bmp" />
+    <Image Include="res\Deal.ico" />
     <Image Include="res\Delete.ico" />
     <Image Include="res\icon1.ico" />
     <Image Include="res\ListImages.bmp" />

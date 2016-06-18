@@ -173,7 +173,7 @@ void CDlgTask::WriteRecently()
 	CString strPath = m_strDirectory;
 	strPath += _T("\\SuperPost");
 	::CreateDirectory(strPath, NULL);
-	strPath += _T("\\config_list.rct");
+	strPath += _T("\\config_set.rct");
 
 	if (stdFile.Open(strPath, CFile::modeWrite | CFile::modeCreate))
 	{

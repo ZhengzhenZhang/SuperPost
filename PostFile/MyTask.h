@@ -18,6 +18,7 @@ public:
 
 public:
 	CPostFileDlg* m_pDlg;
+	CFile m_file;
 
 	CString m_strPath;
 	CString m_strAddress;

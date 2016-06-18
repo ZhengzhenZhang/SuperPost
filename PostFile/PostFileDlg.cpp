@@ -7,6 +7,7 @@
 #include "PostFileDlg.h"
 #include "afxdialogex.h"
 #include "DlgTask.h"
+#include "DlgDeal.h"
 
 
 #ifdef _DEBUG
@@ -87,7 +88,7 @@ BEGIN_MESSAGE_MAP(CPostFileDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_LOOP, &CPostFileDlg::OnMenuLoop)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CPostFileDlg::OnMenuDelete)
 	ON_COMMAND(ID_MENU_MODIFY, &CPostFileDlg::OnMenuModify)
-	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON_DEAL, &CPostFileDlg::OnBnClickedButtonDeal)
 END_MESSAGE_MAP()
 
 
@@ -139,7 +140,7 @@ BOOL CPostFileDlg::OnInitDialog()
 	m_listTask.InsertColumn(nIndex++, _T("端口号"), LVCFMT_LEFT, 65);
 	m_listTask.InsertColumn(nIndex++, _T("发送间隔"), LVCFMT_RIGHT, 65);
 	m_listTask.InsertColumn(nIndex++, _T("包大小"), LVCFMT_RIGHT, 65);
-	m_listTask.InsertColumn(nIndex++, _T("进度"), LVCFMT_RIGHT, 60);
+	m_listTask.InsertColumn(nIndex++, _T("进度"), LVCFMT_RIGHT, 80);
 	m_listTask.InsertColumn(nIndex++, _T("路径"), LVCFMT_LEFT, 500);
 
 	// 允许拖拽文件
@@ -164,6 +165,8 @@ BOOL CPostFileDlg::OnInitDialog()
 		MAKEINTRESOURCE(IDS_BUTTON_LOOP));
 	m_ctlTT.AddWindowTool(GetDlgItem(IDC_BUTTON_DELETE),
 		MAKEINTRESOURCE(IDS_BUTTON_DELETE));
+	m_ctlTT.AddWindowTool(GetDlgItem(IDC_BUTTON_DEAL),
+		MAKEINTRESOURCE(IDS_BUTTON_DEAL));
 
 	// 设置按钮图标
 	((CButton*)GetDlgItem(IDC_BUTTON_BEGIN))->SetIcon(AfxGetApp()->LoadIcon(IDI_ICON_BEGIN));
@@ -171,6 +174,7 @@ BOOL CPostFileDlg::OnInitDialog()
 	((CButton*)GetDlgItem(IDC_BUTTON_SUSPEND))->SetIcon(AfxGetApp()->LoadIcon(IDI_ICON_SUSPEND));
 	((CButton*)GetDlgItem(IDC_BUTTON_LOOP))->SetIcon(AfxGetApp()->LoadIcon(IDI_ICON_LOOP));
 	((CButton*)GetDlgItem(IDC_BUTTON_DELETE))->SetIcon(AfxGetApp()->LoadIcon(IDI_ICON_DELETE));
+	((CButton*)GetDlgItem(IDC_BUTTON_DEAL))->SetIcon(AfxGetApp()->LoadIcon(IDI_ICON_DEAL));
 
 	// 得到当前软件所在目录
 	TCHAR tcPath[MAX_PATH];
@@ -276,6 +280,7 @@ void CPostFileDlg::AddTask(int nIndex)
 	CMyTask *pTask = new CMyTask;
 
 	pTask->m_pDlg = this;
+	pTask->m_nIndex = nIndex;
 	pTask->m_strAddress = m_listTask.GetItemText(nIndex, 3);
 	pTask->m_nPort = _ttoi(m_listTask.GetItemText(nIndex, 4));
 	pTask->m_nSleep = _ttoi(m_listTask.GetItemText(nIndex, 5));
@@ -645,15 +650,6 @@ void CPostFileDlg::WriteRecently()
 }
 
 
-void CPostFileDlg::OnDestroy()
-{
-	CDialogEx::OnDestroy();
-
-	// 延时一段时间保证线程已结束
-	Sleep(1000);
-}
-
-
 void CPostFileDlg::UpdateListNum()
 {
 	int nCounts = m_listTask.GetItemCount();
@@ -667,4 +663,11 @@ void CPostFileDlg::UpdateListNum()
 		CMyTask *pTask = (CMyTask*)(m_listTask.GetItemData(i));
 		pTask->m_nIndex = i;
 	}
+}
+
+
+void CPostFileDlg::OnBnClickedButtonDeal()
+{
+	CDlgDeal dlg;
+	dlg.DoModal();
 }

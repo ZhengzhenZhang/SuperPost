@@ -31,10 +31,7 @@ CMyTask::CMyTask()
 
 CMyTask::~CMyTask()
 {
-	m_bStop = true;
-	// 等待线程结束
-	m_csFinish.Lock();
-	m_csFinish.Unlock();
+	StopTask();
 }
 
 CCriticalSection g_cs;	// 防止线程初始化时候发生冲突
@@ -78,6 +75,7 @@ UINT TreadSend(LPVOID pParam)
 
 	if (bFailed)
 	{
+		file.Close();
 		pTask->StopTask();
 		return 0;
 	}
@@ -128,7 +126,15 @@ UINT TreadSend(LPVOID pParam)
 
 void CMyTask::OnReceive(int nErrorCode)
 {
-	// TODO: 在此添加专用代码和/或调用基类
+	if (m_bSuspend)
+		return;
+
+	BYTE recBuf[BUFSIZE];
+	int len = Receive(recBuf, sizeof (recBuf));
+
+	m_file.Write(recBuf, len);
+
+	m_llPrgs += len;
 
 	CAsyncSocket::OnReceive(nErrorCode);
 }
@@ -154,45 +160,71 @@ void CMyTask::BeginTask()
 			AfxBeginThread(TreadSend, this);
 		}
 		else if (m_bSuspend)
-		{
 			m_bSuspend = false;
-		}
 	}
 	else
 	{
-		
+		(m_pDlg->m_listTask).SetItem(m_nIndex, 0, LVIF_IMAGE, NULL, 0,  NULL, NULL, NULL);
+
+		if (m_bStop)
+		{
+			m_bSuspend = false;
+			m_bStop = false;
+
+			CString strTmp;
+			strTmp.Format(_T("0 %s"), _T("bs"));
+			(m_pDlg->m_listTask).SetItemText(m_nIndex, 7, strTmp);
+
+			bool bFailed = false;
+			if (!m_file.Open(m_strPath, CFile::modeReadWrite | CFile::modeCreate))
+			{
+				AfxMessageBox(_T("创建接收文件失败！"));
+				bFailed = true;
+			}
+			else
+			{
+				if (!AfxSocketInit())
+				{
+					AfxMessageBox(_T("Socket初始化失败！"));
+					bFailed = true;
+				}
+				if (!Create(m_nPort, SOCK_DGRAM))
+				{
+					AfxMessageBox(_T("Socket创建失败！"));
+					bFailed = true;
+				}
+			}
+
+			if (bFailed)
+				StopTask();
+		}
+		else if (m_bSuspend)
+			m_bSuspend = false;
 	}
 }
 
 
 void CMyTask::StopTask()
 {
-	if (m_strAddress != _T("###"))
-	{
-		(m_pDlg->m_listTask).SetItem(m_nIndex, 0, LVIF_IMAGE, NULL, 2,  NULL, NULL, NULL);
-		m_bStop = true;
-		m_bSuspend = true;
-		m_bLoop= false;
-		m_llPrgs = 0;
-	}
-	else
-	{
+	(m_pDlg->m_listTask).SetItem(m_nIndex, 0, LVIF_IMAGE, NULL, 2,  NULL, NULL, NULL);
+	m_bStop = true;
+	m_bSuspend = true;
+	m_bLoop= false;
+	m_llPrgs = 0;
 
-	}
+	// 等待线程结束
+	m_csFinish.Lock();
+	m_csFinish.Unlock();
+
+	m_file.Abort();
+	this->Close();
 }
 
 
 void CMyTask::SuspendTask()
 {
-	if (m_strAddress != _T("###"))
-	{
-		if (m_bStop)
-			return;
-		(m_pDlg->m_listTask).SetItem(m_nIndex, 0, LVIF_IMAGE, NULL, 1,  NULL, NULL, NULL);
-		m_bSuspend = true;
-	}
-	else
-	{
-
-	}
+	if (m_bStop)
+		return;
+	(m_pDlg->m_listTask).SetItem(m_nIndex, 0, LVIF_IMAGE, NULL, 1,  NULL, NULL, NULL);
+	m_bSuspend = true;
 }

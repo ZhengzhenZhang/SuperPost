@@ -42,6 +42,9 @@
     <ClInclude Include="MyTask.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="DlgDeal.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PostFile.cpp">
@@ -60,6 +63,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MyTask.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgDeal.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -99,6 +105,12 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\Delete.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\DataTrans.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\Deal.ico">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>
