@@ -173,6 +173,8 @@ void CMyTask::BeginTask()
 			m_bSuspend = false;
 			m_bStop = false;
 
+			g_cs.Lock();
+
 			CString strTmp;
 			strTmp.Format(_T("0 %s"), _T("bs"));
 			(m_pDlg->m_listTask).SetItemText(m_nIndex, 7, strTmp);
@@ -196,6 +198,8 @@ void CMyTask::BeginTask()
 					bFailed = true;
 				}
 			}
+
+			g_cs.Unlock();
 
 			if (bFailed)
 				StopTask();

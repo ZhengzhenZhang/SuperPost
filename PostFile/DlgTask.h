@@ -35,10 +35,8 @@ public:
 	BOOL m_bReceive;
 
 public:
-	
-	afx_msg void OnBnClickedButtonSelect();
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
-	
+	afx_msg void OnBnClickedButtonSelect();
 	afx_msg void OnBnClickedCheckReceive();
 };

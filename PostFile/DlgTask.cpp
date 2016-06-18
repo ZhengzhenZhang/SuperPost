@@ -48,7 +48,6 @@ void CDlgTask::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgTask, CDialogEx)
-
 	ON_BN_CLICKED(IDC_BUTTON_SELECT, &CDlgTask::OnBnClickedButtonSelect)
 	ON_BN_CLICKED(IDC_CHECK_RECEIVE, &CDlgTask::OnBnClickedCheckReceive)
 END_MESSAGE_MAP()
@@ -88,7 +87,6 @@ BOOL CDlgTask::OnInitDialog()
 	}
 	
 	// 如果修改状态就不读取最近数据
-
 	ReadRecently();
 
 	// 得到最近修改数据
@@ -119,7 +117,6 @@ void CDlgTask::OnBnClickedButtonSelect()
 	m_strName = fileDlg.GetFileName();
 
 	GetDlgItem(IDC_EDIT_PATH)->SetWindowText(m_strPath);
-
 	GetDlgItem(IDOK)->SetFocus();
 }
 

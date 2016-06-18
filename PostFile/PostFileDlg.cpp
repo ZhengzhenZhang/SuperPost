@@ -55,7 +55,6 @@ CPostFileDlg::CPostFileDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_strDragPath = _T("");
-	m_nPrgsIndex = 0;
 	m_strDirectory = _T("");
 }
 
@@ -234,6 +233,82 @@ void CPostFileDlg::OnPaint()
 HCURSOR CPostFileDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
+}
+
+
+void CPostFileDlg::ReadRecently()
+{
+	CStdioFile stdFile;
+	CString strPath = m_strDirectory + _T("\\SuperPost\\config_list.rct");
+	if (stdFile.Open(strPath, CFile::modeRead))
+	{
+		CString strRead;
+		int nIndex = 0;
+		while (stdFile.ReadString(strRead))
+		{
+			int nIndex = m_listTask.GetItemCount();
+			m_listTask.InsertItem(nIndex, _T(""), 2);
+			m_listTask.SetItemText(nIndex, 2, strRead);
+
+			bool bSend;
+			for (int i = 3; i < 9; i++)
+			{
+				if (i == 7)
+					continue;
+				stdFile.ReadString(strRead);
+				m_listTask.SetItemText(nIndex, i, strRead);
+
+				if (3 == i)
+					bSend = strRead != _T("###");
+			}
+
+			CString strTmp;
+			strTmp.Format(_T("0 %s"), bSend ? _T("%") : _T("bs"));
+			m_listTask.SetItemText(nIndex, 7, strTmp);
+
+			AddTask(nIndex);
+		}
+
+		stdFile.Close();
+
+		UpdateListNum();
+	}
+
+}
+
+
+void CPostFileDlg::WriteRecently()
+{ 
+
+	CStdioFile stdFile;
+
+	CString strPath = m_strDirectory;
+	strPath += _T("\\SuperPost");
+
+	::CreateDirectory(strPath, NULL);
+
+	strPath += _T("\\config_list.rct");
+
+	if (stdFile.Open(strPath, CFile::modeWrite | CFile::modeCreate))
+	{
+
+		int nCounts = m_listTask.GetItemCount();
+		CString strWrite;
+		 
+		for (int i = 0; i < nCounts; i++)
+		{
+			for (int j = 2; j < 9; j++)
+			{
+				if (j == 7)
+					continue;
+				strWrite = m_listTask.GetItemText(i, j) + _T('\n');
+				stdFile.WriteString(strWrite);
+			}
+		}
+
+		nCounts = m_listTask.GetItemCount();
+		stdFile.Close();
+	}
 }
 
 
@@ -571,82 +646,6 @@ void CPostFileDlg::OnMenuModify()
 
 		delete pTask;
 		AddTask(nIndex);
-	}
-}
-
-
-void CPostFileDlg::ReadRecently()
-{
-	CStdioFile stdFile;
-	CString strPath = m_strDirectory + _T("\\SuperPost\\config_list.rct");
-	if (stdFile.Open(strPath, CFile::modeRead))
-	{
-		CString strRead;
-		int nIndex = 0;
-		while (stdFile.ReadString(strRead))
-		{
-			int nIndex = m_listTask.GetItemCount();
-			m_listTask.InsertItem(nIndex, _T(""), 2);
-			m_listTask.SetItemText(nIndex, 2, strRead);
-
-			bool bSend;
-			for (int i = 3; i < 9; i++)
-			{
-				if (i == 7)
-					continue;
-				stdFile.ReadString(strRead);
-				m_listTask.SetItemText(nIndex, i, strRead);
-
-				if (3 == i)
-					bSend = strRead != _T("###");
-			}
-
-			CString strTmp;
-			strTmp.Format(_T("0 %s"), bSend ? _T("%") : _T("bs"));
-			m_listTask.SetItemText(nIndex, 7, strTmp);
-
-			AddTask(nIndex);
-		}
-
-		stdFile.Close();
-
-		UpdateListNum();
-	}
-
-}
-
-
-void CPostFileDlg::WriteRecently()
-{ 
-
-	CStdioFile stdFile;
-
-	CString strPath = m_strDirectory;
-	strPath += _T("\\SuperPost");
-
-	::CreateDirectory(strPath, NULL);
-
-	strPath += _T("\\config_list.rct");
-
-	if (stdFile.Open(strPath, CFile::modeWrite | CFile::modeCreate))
-	{
-	
-		int nCounts = m_listTask.GetItemCount();
-		CString strWrite;
-
-		for (int i = 0; i < nCounts; i++)
-		{
-			for (int j = 2; j < 9; j++)
-			{
-				if (j == 7)
-					continue;
-				strWrite = m_listTask.GetItemText(i, j) + _T('\n');
-				stdFile.WriteString(strWrite);
-			}
-		}
-
-		nCounts = m_listTask.GetItemCount();
-		stdFile.Close();
 	}
 }
 

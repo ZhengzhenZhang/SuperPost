@@ -35,17 +35,17 @@ public:
 	void AddTask(int nIndex);
 
 public:
+	CString m_strDirectory;		// 当前程序路径
 	CString m_strDragPath;
-	int m_nPrgsIndex;
-	CImageList m_ilList;		// 0 开始 1 暂停 2 停止
-	CProgressCtrl m_prgsTask;
+	
 	CListCtrl m_listTask;
+	CImageList m_ilList;		// 0 开始 1 暂停 2 停止
+	
+	CProgressCtrl m_prgsTask;
 	
 	HACCEL m_hAccelTable;
 
 	CMyToolTipCtrl m_ctlTT;
-
-	CString m_strDirectory;		// 当前程序路径
 
 // 实现
 protected:
